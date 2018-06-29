@@ -24,7 +24,7 @@ Atomia.ViewModels = Atomia.ViewModels || {};
         self.order = domainItemData.Order;
         self.domainNameSldDecoded = punycode.toUnicode(self.domainNameSld);
 
-        /** 
+        /**
          * Overrides ProductMixin property.
          * Checks if domain registration item is equal to other item based on article number and domain name.
          * @param {Object} other - The item to compare to
@@ -38,7 +38,7 @@ Atomia.ViewModels = Atomia.ViewModels || {};
     }
 
 
-    /** 
+    /**
      * Create domain registration view model.
      * @param {Object} cart - instance of cart to add or remove items to.
      */
@@ -53,6 +53,7 @@ Atomia.ViewModels = Atomia.ViewModels || {};
         self.secondaryResults = ko.observableArray().extend({ rateLimit: 50 });
         self.noResults = ko.observable(false);
         self.searchFinished = ko.observable(false);
+        self.hasPrimaryResult = ko.observable(false);
 
         self.hasResults = ko.pureComputed(function () {
             return self.primaryResults().length > 0 || self.secondaryResults().length > 0;
@@ -71,7 +72,7 @@ Atomia.ViewModels = Atomia.ViewModels || {};
             self.submittedQuery(punycode.toUnicode(self.query()));
             self.noResults(false);
             self.searchFinished(false);
-            
+
             domainsApi.findDomains(self.query(), function (data) {
                 var domainSearchId = data.DomainSearchId;
                 self.searchFinished(data.FinishSearch);
@@ -92,16 +93,20 @@ Atomia.ViewModels = Atomia.ViewModels || {};
 
                             if (data.Results.length === 0 && data.FinishSearch) {
                                 self.noResults(true);
-                                self.isLoadingResults(false);
                             }
                             else {
                                 self.updateResults(data.Results);
+                                self.hasAtLeastOnePrimary();
+
+                                if (data.Results.length !== 0 && self.hasPrimaryResult()) {
+                                    self.isLoadingResults(false);
+                                }
                             }
                         });
                 }
             });
         };
-        
+
         /** Primary TLD search results have finished loading. */
         self.primaryResultsAreFinished = function primaryResultsAreFinished() {
             if (self.primaryResults().length === 0 && !self.searchFinished()) {
@@ -113,7 +118,16 @@ Atomia.ViewModels = Atomia.ViewModels || {};
             });
         };
 
-        /** 
+        /** Checking if there at least one loaded domain (primary). */
+        self.hasAtLeastOnePrimary = function hasAtLeastOnePrimary() {
+            var hasAnyResult = _.any(self.primaryResults(), function (r) {
+                return r.status !== 'loading';
+            });
+
+            self.hasPrimaryResult(hasAnyResult);
+        };
+
+        /**
          * Create domain registration items from primary and secondary TLD results and update view model.
          * @param {Array} results - The domain search results.
          */
@@ -159,7 +173,7 @@ Atomia.ViewModels = Atomia.ViewModels || {};
          * @returns the template name.
          */
         self.getTemplateName = function getTemplateName(item) {
-            
+
             if (item.isPrimary && item.status === 'available') {
                 return 'domainregistration-primary-available';
             }
