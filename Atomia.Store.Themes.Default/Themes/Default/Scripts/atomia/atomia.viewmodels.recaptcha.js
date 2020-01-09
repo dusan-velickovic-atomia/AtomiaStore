@@ -4,14 +4,14 @@ Atomia.ViewModels = Atomia.ViewModels || {};
 (function (exports, _, ko, utils, checkoutApi) {
     'use strict';
 
-    function Recaptcha($reCaptchaMessage, $checkoutFormSubmitBtn, siteKey) {
+    function Recaptcha($reCaptchaMessage, $checkoutFormSubmitBtn, reCaptchaPlaceholderId, siteKey) {
         var self = this;
         self.isValid = ko.observable(false);
         self.$reCaptchaMessage = $reCaptchaMessage;
         self.$checkoutFormSubmitBtn = $checkoutFormSubmitBtn;
 
         self.render = function () {
-            grecaptcha.render('reCaptchaPlaceholder', {
+            grecaptcha.render(reCaptchaPlaceholderId, {
                 'sitekey': siteKey,
                 'callback': function (response) {
                     if (response !== '') {

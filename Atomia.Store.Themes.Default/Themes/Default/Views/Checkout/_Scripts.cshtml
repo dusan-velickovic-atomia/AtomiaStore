@@ -7,7 +7,11 @@
 
 @if (ViewBag.RecaptchaEnabled)
 {
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script>
+        $("body").append($("<script />", {
+            src: "https://www.google.com/recaptcha/api.js?hl=" + Atomia.VM.languageSelector.selectedLanguage().shortName.toLowerCase()
+        }))
+    </script>
 }
 
 <script type="text/javascript">
@@ -36,7 +40,7 @@
 
     @if (ViewBag.RecaptchaEnabled)
     {
-        @: Atomia.VM.recaptcha = new Atomia.ViewModels.Recaptcha($('#reCaptchaMessage'), $('.submit'), '@ViewBag.RecaptchaSiteKey');
+        @: Atomia.VM.recaptcha = new Atomia.ViewModels.Recaptcha($('#reCaptchaMessage'), $('.submit'), 'reCaptchaPlaceholder', '@ViewBag.RecaptchaSiteKey');
         @: $.extend(Atomia.RESX, { recaptchaVerificationFaild: '@Html.CommonResource("RecaptchaVerificationFaild")' });
     }
 </script>
