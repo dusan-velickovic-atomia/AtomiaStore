@@ -3,14 +3,20 @@
 @{
     Html.EnableClientValidation();
     var checkVAT = ViewBag.CheckVAT ? "true" : "false";
+    var recaptchaEnabled = ViewBag.RecaptchaEnabled != null && ViewBag.RecaptchaEnabled;
 }
 
-@if (ViewBag.RecaptchaEnabled)
+@if (recaptchaEnabled)
 {
     <script>
+        var language = Atomia.VM.languageSelector.selectedLanguage().shortName.toLowerCase();
+        var scriptUrl = 'https://www.google.com/recaptcha/api.js?onload=render&hl=';
+
         $("body").append($("<script />", {
-            src: "https://www.google.com/recaptcha/api.js?hl=" + Atomia.VM.languageSelector.selectedLanguage().shortName.toLowerCase()
-        }))
+            src: scriptUrl + language,
+            async: true,
+            defer: true
+        }));
     </script>
 }
 
@@ -38,10 +44,9 @@
         @: Atomia.VM.vatValidation.validateVatNumber();
     }
 
-    @if (ViewBag.RecaptchaEnabled)
+    @if (recaptchaEnabled)
     {
-        @: Atomia.VM.recaptcha = new Atomia.ViewModels.Recaptcha($('#reCaptchaMessage'), $('.submit'), 'reCaptchaPlaceholder', '@ViewBag.RecaptchaSiteKey');
-        @: $.extend(Atomia.RESX, { recaptchaVerificationFaild: '@Html.CommonResource("RecaptchaVerificationFaild")' });
+        @: Atomia.VM.recaptcha = new Atomia.ViewModels.Recaptcha('reCaptchaPlaceholder', '@ViewBag.RecaptchaSiteKey');
     }
 </script>
 
