@@ -40,7 +40,7 @@ namespace Atomia.Store.AspNetMvc.Controllers
             if (RecaptchaHelper.IsRecaptchaEnabled())
             {
                 ViewBag.RecaptchaEnabled = true;
-                ViewBag.RecaptchaSiteKey = ConfigurationManager.AppSettings["RecaptchaSiteKey"];
+                ViewBag.RecaptchaSiteKey = RecaptchaHelper.GetSiteKey();
             }
 
             var model = DependencyResolver.Current.GetService<CheckoutViewModel>();
@@ -107,7 +107,7 @@ namespace Atomia.Store.AspNetMvc.Controllers
             if (RecaptchaHelper.IsRecaptchaEnabled())
             {
                 ViewBag.RecaptchaEnabled = true;
-                ViewBag.RecaptchaSiteKey = ConfigurationManager.AppSettings["RecaptchaSiteKey"];
+                ViewBag.RecaptchaSiteKey = RecaptchaHelper.GetSiteKey();
             }
 
             ViewData["formHasErrors"] = true;

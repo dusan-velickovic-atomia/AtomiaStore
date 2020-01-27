@@ -52,5 +52,14 @@ namespace Atomia.Store.AspNetMvc.Helpers
 
             return recaptchaEnabledParsed;
         }
+
+        /// <summary>
+        /// Gets recaptcha site key from App settings.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetSiteKey()
+        {
+            return ConfigurationManager.AppSettings["RecaptchaSiteKey"];
+        }
     }
 }
