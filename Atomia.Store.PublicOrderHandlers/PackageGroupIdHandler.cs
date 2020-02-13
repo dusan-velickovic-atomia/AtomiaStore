@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Atomia.Web.Plugin.OrderServiceReferences.AtomiaBillingPublicService;
+using Atomia.Store.Core;
 
 namespace Atomia.Store.PublicOrderHandlers
 {
@@ -13,15 +14,23 @@ namespace Atomia.Store.PublicOrderHandlers
     /// </summary>
     public class PackageGroupIdHandler : OrderDataHandler
     {
-        private readonly AtomiaBillingPublicService _atomiaBillingPublicService;
+        /// <summary>
+        /// The package provider instance
+        /// </summary>
+        private readonly IPackageProvider _packageProvider;
 
         /// <summary>
         /// Create a new instance of the handler.
         /// </summary>
-        /// <param name="atomiaBillingPublicService">The atomia billing public service instance.</param>
-        public PackageGroupIdHandler(AtomiaBillingPublicService atomiaBillingPublicService)
+        /// <param name="packageProvider">The package provider instance.</param>
+        public PackageGroupIdHandler(IPackageProvider packageProvider)
         {
-            _atomiaBillingPublicService = atomiaBillingPublicService;
+            if (packageProvider == null)
+            {
+                throw new ArgumentNullException(nameof(IPackageProvider));
+            }
+
+            _packageProvider = packageProvider;
         }
 
         /// <summary>
@@ -29,7 +38,7 @@ namespace Atomia.Store.PublicOrderHandlers
         /// </summary>
         public override PublicOrder AmendOrder(PublicOrder order, PublicOrderContext orderContext)
         {
-            if (_atomiaBillingPublicService.IsMultiPackageEnabled())
+            if (_packageProvider.IsMultiPackageEnabled())
             {
                 var packageGroupId = Guid.NewGuid().ToString();
                 foreach (var item in order.OrderItems)

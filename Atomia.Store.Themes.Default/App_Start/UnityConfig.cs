@@ -177,13 +177,9 @@ namespace Atomia.Store.Themes.Default
             container.RegisterType<OrderDataHandler, Atomia.Store.PublicOrderHandlers.CartItemHandlers.DefaultHandler>("Default");
             container.RegisterType<OrderDataHandler, Atomia.Store.PublicOrderHandlers.CartItemHandlers.SetupFeesHandler>("SetupFees");
             container.RegisterType<OrderDataHandler, Atomia.Store.PublicOrderHandlers.CartItemHandlers.RemovePostOrderHandler>("RemovePostOrder");
+            container.RegisterType<OrderDataHandler, PublicOrderHandlers.PackageGroupIdHandler>("PackageGroupId");
 
             container.RegisterType<IOrderPlacementService, Atomia.Store.PublicBillingApi.Adapters.OrderPlacementService>();
-
-            if (IsMultipackageEnabled())
-            {
-                container.RegisterType<OrderDataHandler, PublicOrderHandlers.PackageGroupIdHandler>("PackageGroupId");
-            }
 
             var orderDataHandlerParams = GetOrderDataHandlerParams();
 
@@ -241,13 +237,9 @@ namespace Atomia.Store.Themes.Default
                 // This is a good position for handlers that add extra items depending on other items in cart, e.g. like HST-APPY in old order page.
 
                 // RemovePostOrder should be placed last to make sure any added postal fees are removed, since they will be added by Atomia Billing.
-                new ResolvedParameter<OrderDataHandler>("RemovePostOrder")
+                new ResolvedParameter<OrderDataHandler>("RemovePostOrder"),
+                new ResolvedParameter<OrderDataHandler>("PackageGroupId")
             };
-
-            if (IsMultipackageEnabled())
-            {
-                orderDataHandlerParams.Add(new ResolvedParameter<OrderDataHandler>("PackageGroupId"));
-            }
 
             return new ResolvedArrayParameter<OrderDataHandler>(orderDataHandlerParams.ToArray());
         }
@@ -284,20 +276,6 @@ namespace Atomia.Store.Themes.Default
             var orderDataHandlerParams = GetOrderDataHandlerParams();
             container.RegisterType<OrderCreator, CombinedOrderCreator>(
                     new InjectionConstructor(orderDataHandlerParams, new ResolvedParameter<PublicBillingApiProxy>(), new ResolvedParameter<IAuditLogger>()));
-        }
-
-        /// <summary>
-        /// Checks if the multipackage is enabled in the configuration.
-        /// </summary>
-        /// <returns></returns>
-        private static bool IsMultipackageEnabled()
-        {
-            var multipackageAppSetting = ConfigurationManager.AppSettings["MultipackageEnabled"];
-            var multipackageValue = false;
-
-            bool.TryParse(multipackageAppSetting, out multipackageValue);
-
-            return multipackageValue;
         }
     }
 }
