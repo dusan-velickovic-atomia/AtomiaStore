@@ -213,8 +213,7 @@ namespace Atomia.Store.Themes.Default
         private static ResolvedArrayParameter<OrderDataHandler> GetOrderDataHandlerParams()
         {
             // We resolve the parameters manually to control the order the OrderHandlers are applied.
-            var orderDataHandlerParams = new List<ResolvedParameter<OrderDataHandler>>
-            {
+            return new ResolvedArrayParameter<OrderDataHandler>(
                 new ResolvedParameter<OrderDataHandler>("Reseller"),
                 new ResolvedParameter<OrderDataHandler>("LanguageHandler"),
                 new ResolvedParameter<OrderDataHandler>("Currency"),
@@ -229,6 +228,8 @@ namespace Atomia.Store.Themes.Default
                 new ResolvedParameter<OrderDataHandler>("OwnDomain"),
                 new ResolvedParameter<OrderDataHandler>("SetupFees"),
 
+                // PackageGroupId handler will add package group id to all order lines, if the multipackage is enabled.
+                new ResolvedParameter<OrderDataHandler>("PackageGroupId"),
                 // This is a good position for TLD specific handlers.
 
                 // Default should be placed after all other handlers that add items form the cart to the order, or there is risk of adding the same item twice.
@@ -237,11 +238,8 @@ namespace Atomia.Store.Themes.Default
                 // This is a good position for handlers that add extra items depending on other items in cart, e.g. like HST-APPY in old order page.
 
                 // RemovePostOrder should be placed last to make sure any added postal fees are removed, since they will be added by Atomia Billing.
-                new ResolvedParameter<OrderDataHandler>("RemovePostOrder"),
-                new ResolvedParameter<OrderDataHandler>("PackageGroupId")
-            };
-
-            return new ResolvedArrayParameter<OrderDataHandler>(orderDataHandlerParams.ToArray());
+                new ResolvedParameter<OrderDataHandler>("RemovePostOrder")
+            );
         }
 
         /// <summary>
