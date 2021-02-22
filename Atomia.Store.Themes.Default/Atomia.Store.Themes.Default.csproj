@@ -249,6 +249,7 @@
     <None Include="Original Files\bin\Atomia.Web.Plugin.Validation.dll.config" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <None Include="Scripts\amplify-vsdoc.js" />
+    <Content Include="robots.txt" />
     <Content Include="Scripts\amplify.js" />
     <Content Include="Scripts\amplify.min.js" />
     <Content Include="Scripts\amplify\amplify.core.js" />
